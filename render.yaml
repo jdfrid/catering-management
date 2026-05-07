@@ -2,9 +2,10 @@ services:
   - type: web
     name: catering-management
     runtime: node
-    plan: starter
+    plan: free
     region: frankfurt
     buildCommand: npm ci && npm run prisma:generate && npm run build
+    preDeployCommand: npx prisma migrate deploy
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
@@ -20,7 +21,7 @@ services:
 
 databases:
   - name: catering-management-db
-    plan: basic-256mb
+    plan: free
     region: frankfurt
     databaseName: catering_management
     user: catering_app

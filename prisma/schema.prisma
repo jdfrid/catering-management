@@ -213,7 +213,7 @@ model SupplierPrice {
 
 model Quote {
   id                String      @id @default(cuid())
-  quoteNumber       Int         @unique
+  quoteNumber       Int         @unique @default(autoincrement())
   customerId        String
   customer          Customer    @relation(fields: [customerId], references: [id])
   eventId           String
@@ -250,7 +250,7 @@ model QuoteItem {
 
 model PurchaseOrder {
   id          String              @id @default(cuid())
-  orderNumber Int                 @unique
+  orderNumber Int                 @unique @default(autoincrement())
   supplierId  String
   supplier    Supplier            @relation(fields: [supplierId], references: [id])
   eventId     String?

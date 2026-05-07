@@ -1,57 +1,79 @@
 # מערכת ניהול קייטרינג
 
-פרויקט חדש ונקי ל-MVP של מערכת ניהול קייטרינג: לקוחות, אירועים, תפריטים, עץ מוצר, הצעות מחיר, רכש בסיסי, משימות מטבח ותשלומים בסיסיים.
+פרויקט MVP לניהול קייטרינג: לקוחות, אירועים, תפריטים, עץ מוצר, הצעות מחיר, רכש בסיסי, משימות מטבח ותשלומים בסיסיים.
 
 ## Stack
 
-- Next.js App Router + TypeScript
+- Next.js (App Router) + TypeScript
 - Tailwind CSS
-- Prisma ORM
-- PostgreSQL
-- Render deployment blueprint
+- Prisma ORM + **PostgreSQL**
+- `render.yaml` — Web + DB ב-Render
 
-## פיתוח מקומי
+## הרצה מקומית (מומלץ עם Docker)
+
+דורש [Docker Desktop](https://www.docker.com/products/docker-desktop/) מותקן.
 
 ```powershell
+cd catering-management
+
+# התקנת תלויות
 npm install
+
+# מסד Postgres מקומי (פורט 5433 כדי לא להתנגש ב-5432)
+npm run db:up
+
+# משתני סביבה — יוצרים .env מהדוגמה (כבר מכוון ל-Docker המקומי)
 Copy-Item .env.example .env
+
+# יצירת טבלאות (מיגרציה ראשונה / עדכונים עתידיים)
 npm run prisma:generate
+npm run prisma:migrate
+```
+
+כשהמיגרציה שואלת שם, אפשר להשאיר את ברירת המחדל או לתת למשל `init`.
+
+הרצת השרת:
+
+```powershell
 npm run dev
 ```
 
-פתחו את [http://localhost:3000](http://localhost:3000).
+פתיחה בדפדפן: [http://localhost:3000](http://localhost:3000)
 
-## MVP
+עצירת המסד:
 
-- הרשאות בסיסיות לפי תפקידים.
-- עלויות פנימיות ורווחיות למנהלים בלבד.
-- עץ מוצר ומתכונים עם גרסאות ו-snapshots להצעות.
-- הצעות מחיר עם PDF ומייל בהמשך.
-- רכש בסיסי ומשימות מטבח מותאמות טאבלט.
-- תשלומים בסיסיים ללא אינטגרציית חשבוניות בשלב הראשון.
+```powershell
+npm run db:down
+```
 
-## פריסה ל-Render
+## Render — Web + Postgres חינמי
 
-הקובץ `render.yaml` מגדיר שירות Web ו-PostgreSQL מנוהל. ב-Render:
+ב-`render.yaml` מוגדרים:
 
-1. חברו GitHub repository חדש.
-2. בחרו Blueprint deploy על בסיס `render.yaml`.
-3. הגדירו `EMAIL_FROM` וערכי סביבה חסרים.
-4. הריצו מיגרציות במסד הנתונים כחלק מתהליך העלייה לייצור.
+- שירות Web בתכנית **free** (נרדם אחרי חוסר שימוש)
+- Postgres בתכנית **free**
 
-## פקודות חשובות
+**חשוב:** מסדי Postgres חינמיים ב-Render מוגבלים בזמן (לפי המדיניות שלהם — בדרך כלל תפוגה אחרי תקופה; אפשר לשדרג אחר כך). לפרטים עדכניים: [Render — Free](https://render.com/docs/free).
+
+לאחר חיבור הריפו ל-Blueprint:
+
+1. הגדרו ב-Dashboard את `EMAIL_FROM` (מסומן כ-`sync: false` ב-`render.yaml`).
+2. בכל Deploy רץ `preDeployCommand`: `npx prisma migrate deploy` — דורש שתיקיית `prisma/migrations` תהיה ב-commit (קיימת בפרויקט).
+
+## פקודות שימושיות
 
 ```powershell
 npm run lint
 npm run build
 npm run prisma:generate
-npm run prisma:migrate
-npm run prisma:deploy
+npm run prisma:migrate    # פיתוח — יוצר/מעדכן מיגרציות
+npm run prisma:deploy     # ייצור / CI — רק מיגרציות שקיימות בתיקייה
+npm run db:logs
 ```
 
 ## לא ב-MVP
 
-- אינטגרציה לשירות חשבוניות ישראלי.
-- ייבוא Excel.
-- WhatsApp/SMS.
-- מלאי מתקדם לפי אצווה ותפוגה.
+- אינטגרציה לשירות חשבוניות ישראלי
+- ייבוא Excel
+- WhatsApp/SMS
+- מלאי מתקדם לפי אצווה ותפוגה
