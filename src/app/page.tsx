@@ -39,10 +39,22 @@ export default function Home() {
                   הצעות מחיר
                 </Link>
                 <Link
+                  href="/purchasing"
+                  className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/40 bg-white/10 px-5 font-bold text-white hover:bg-white/20"
+                >
+                  רכש
+                </Link>
+                <Link
                   href="/kitchen"
                   className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/40 bg-white/10 px-5 font-bold text-white hover:bg-white/20"
                 >
                   מסך מטבח
+                </Link>
+                <Link
+                  href="/finance"
+                  className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/40 bg-white/10 px-5 font-bold text-white hover:bg-white/20"
+                >
+                  כספים
                 </Link>
               </div>
             </div>
@@ -113,7 +125,7 @@ export default function Home() {
           <article className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
             <h2 className="text-2xl font-bold">מודולי MVP</h2>
             <p className="mt-1 text-sm text-slate-500">
-              לחיצה פותחת את המסכים — בשלב זה תוכן הדגמה.
+              לחיצה פותחת את המודולים — טפסים ותהליכים מחוברים למסד.
             </p>
             <div className="mt-5 grid gap-3">
               {moduleLinks.map((module, index) => (

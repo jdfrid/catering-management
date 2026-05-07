@@ -19,10 +19,9 @@ export const mainNav: NavItem[] = [
 export const moduleLinks: { href: string; title: string }[] = [
   { href: "/customers", title: "לקוחות ואנשי קשר" },
   { href: "/events", title: "אירועים וסטטוסים" },
-  { href: "/menu", title: "מנות, רכיבים ועץ מוצר" },
-  { href: "/quotes", title: "חישוב עלויות והצגת רווחיות" },
-  { href: "/quotes", title: "הצעות מחיר, PDF ומייל" },
-  { href: "/purchasing", title: "רכש בסיסי לפי אירוע" },
+  { href: "/menu", title: "תפריט, מנות ועץ מוצר" },
+  { href: "/quotes", title: "הצעות מחיר ורווחיות" },
+  { href: "/purchasing", title: "רכש — ספקים והזמנות" },
   { href: "/kitchen", title: "משימות מטבח לטאבלט" },
-  { href: "/finance", title: "תשלומים ודוחות בסיסיים" },
+  { href: "/finance", title: "כספים — תשלומים" },
 ];
