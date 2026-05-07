@@ -6,6 +6,10 @@ import { DeleteMenuItemButton } from "@/components/DeleteMenuItemButton";
 import { AddRecipeComponentForm } from "@/components/AddRecipeComponentForm";
 import { RemoveRecipeComponentButton } from "@/components/RemoveRecipeComponentButton";
 import { decimalToNumber } from "@/lib/money";
+import {
+  costPerSaleUnit,
+  estimateMenuItemRecipeCost,
+} from "@/lib/recipe-cost";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +58,12 @@ export default async function MenuItemDetailPage({ params, searchParams }: Props
     orderBy: { name: "asc" },
     select: { id: true, name: true, type: true, unit: true },
   });
+
+  const recipeCost = await estimateMenuItemRecipeCost(menuItem.id);
+  const unitFromPrices =
+    recipeCost && recipeCost.lines.length > 0
+      ? costPerSaleUnit(recipeCost.total, menuItem.baseRecipeQuantity)
+      : null;
 
   return (
     <main className="min-h-[60vh] bg-[#f7f2ea] px-4 py-8 sm:px-6 lg:px-10">
@@ -157,6 +167,96 @@ export default async function MenuItemDetailPage({ params, searchParams }: Props
               </p>
             ) : null}
           </div>
+        </section>
+
+        <section className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-slate-200">
+          <h2 className="text-xl font-bold">עלות משוערת לפי מחירון ספקים</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            מחושב מסכום שורות המתכון (כולל פחת) × מחירי רכש תקפים; יחידת המחירון
+            חייבת להתאים ליחידה במתכון. ספק מועדף לחומר נבחר כשקיים מחיר תקף.
+          </p>
+          {!recipeCost || recipeCost.lines.length === 0 ? (
+            <p className="mt-4 text-slate-500">אין רכיבים במתכון — לא ניתן להעריך עלות.</p>
+          ) : (
+            <>
+              <div className="mt-4 flex flex-wrap items-baseline gap-3">
+                <span className="text-2xl font-bold" dir="ltr">
+                  ₪{decimalToNumber(recipeCost.total).toFixed(2)}
+                </span>
+                <span className="text-sm text-slate-600">
+                  לבסיס{" "}
+                  <span dir="ltr">{decimalToNumber(menuItem.baseRecipeQuantity)}</span>{" "}
+                  {menuItem.saleUnit}
+                </span>
+                {unitFromPrices != null ? (
+                  <span className="text-sm font-semibold text-slate-800">
+                    (≈ ₪{unitFromPrices.toFixed(2)} ליחידת מכירה)
+                  </span>
+                ) : null}
+              </div>
+              {recipeCost.missing.length > 0 ? (
+                <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+                  <p className="font-semibold">חסר מחיר תקף למרכיבים:</p>
+                  <ul className="mt-2 list-inside list-disc">
+                    {recipeCost.missing.map((m, i) => (
+                      <li key={i}>
+                        {m.ingredientName} ({m.unit})
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    href="/purchasing/prices"
+                    className="mt-3 inline-block font-semibold text-amber-900 underline"
+                  >
+                    למחירון ספקים
+                  </Link>
+                </div>
+              ) : null}
+
+              <div className="mt-6 overflow-x-auto">
+                <table className="w-full min-w-[720px] text-right text-xs sm:text-sm">
+                  <thead className="border-b border-slate-200">
+                    <tr>
+                      <th className="px-2 py-2 font-semibold">רכיב</th>
+                      <th className="px-2 py-2 font-semibold">כמות+פחת</th>
+                      <th className="px-2 py-2 font-semibold">מחיר יח׳</th>
+                      <th className="px-2 py-2 font-semibold">ספק</th>
+                      <th className="px-2 py-2 font-semibold">מקור</th>
+                      <th className="px-2 py-2 font-semibold">שורה ₪</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recipeCost.lines.map((ln) => (
+                      <tr key={ln.componentId} className="border-b border-slate-100">
+                        <td className="px-2 py-2">{ln.ingredientName}</td>
+                        <td className="px-2 py-2 font-mono" dir="ltr">
+                          {ln.qtyWithWaste.toFixed(3)} {ln.unit}
+                        </td>
+                        <td className="px-2 py-2 font-mono" dir="ltr">
+                          {ln.unitPrice != null ? `₪${ln.unitPrice.toFixed(2)}` : "—"}
+                        </td>
+                        <td className="px-2 py-2">
+                          {ln.supplierName ?? "—"}
+                        </td>
+                        <td className="px-2 py-2 text-slate-600">
+                          {ln.source === "preferred"
+                            ? "מועדף"
+                            : ln.source === "cheapest"
+                              ? "זול ביותר"
+                              : "חסר"}
+                        </td>
+                        <td className="px-2 py-2 font-mono font-semibold" dir="ltr">
+                          {ln.lineCost != null
+                            ? `₪${ln.lineCost.toFixed(2)}`
+                            : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </section>
       </div>
     </main>

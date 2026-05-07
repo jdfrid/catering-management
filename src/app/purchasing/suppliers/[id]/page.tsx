@@ -20,7 +20,13 @@ export default async function SupplierDetailPage({
 
   const supplier = await prisma.supplier.findUnique({
     where: { id },
-    include: { _count: { select: { purchaseOrders: true } } },
+    include: {
+      _count: { select: { purchaseOrders: true } },
+      prices: {
+        orderBy: { ingredient: { name: "asc" } },
+        include: { ingredient: { select: { id: true, name: true } } },
+      },
+    },
   });
   if (!supplier) notFound();
 
@@ -51,6 +57,57 @@ export default async function SupplierDetailPage({
         <div className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-slate-200">
           <SupplierForm supplier={supplier} />
         </div>
+
+        <section className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-slate-200">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-bold">מחירון</h2>
+            <Link
+              href={`/purchasing/prices/new?supplierId=${supplier.id}`}
+              className="rounded-2xl bg-slate-950 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800"
+            >
+              הוספת מחיר
+            </Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[520px] text-right text-sm">
+              <thead className="border-b border-slate-200">
+                <tr>
+                  <th className="px-2 py-2 font-semibold">חומר גלם</th>
+                  <th className="px-2 py-2 font-semibold">מחיר</th>
+                  <th className="px-2 py-2 font-semibold">יחידה</th>
+                  <th className="px-2 py-2 font-semibold" />
+                </tr>
+              </thead>
+              <tbody>
+                {supplier.prices.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-2 py-6 text-slate-500">
+                      אין מחירים — הוסיפו ממחירון הרכש.
+                    </td>
+                  </tr>
+                ) : (
+                  supplier.prices.map((p) => (
+                    <tr key={p.id} className="border-b border-slate-100">
+                      <td className="px-2 py-2">{p.ingredient.name}</td>
+                      <td className="px-2 py-2 font-mono" dir="ltr">
+                        ₪{Number(p.price).toFixed(2)}
+                      </td>
+                      <td className="px-2 py-2">{p.priceUnit}</td>
+                      <td className="px-2 py-2">
+                        <Link
+                          href={`/purchasing/prices/${p.id}`}
+                          className="font-semibold text-amber-900 hover:underline"
+                        >
+                          עריכה
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         {supplier._count.purchaseOrders === 0 ? (
           <div className="rounded-[2rem] border border-red-100 bg-red-50/50 p-6">

@@ -9,6 +9,10 @@ import type { ActionState } from "@/lib/forms";
 import { errState, okState } from "@/lib/forms";
 import { recalculateQuoteTotals } from "@/lib/quote-totals";
 import { decimalToNumber, toDecimal, toDecimalMoney } from "@/lib/money";
+import {
+  costPerSaleUnit,
+  estimateMenuItemRecipeCost,
+} from "@/lib/recipe-cost";
 
 function flattenZod(err: z.ZodError): Record<string, string> {
   const out: Record<string, string> = {};
@@ -187,10 +191,28 @@ export async function addQuoteLine(
   });
   if (!menuItem) return errState({ menuItemId: "מנה לא נמצאה" });
 
+  const estimate = await estimateMenuItemRecipeCost(menuItem.id);
+  if (!estimate) {
+    return errState({ _form: "לא ניתן לחשב עלות למנה" });
+  }
+
+  const recipeMeta = await prisma.recipe.findFirst({
+    where: { menuItemId: menuItem.id, active: true },
+    orderBy: { version: "desc" },
+    select: { version: true, id: true },
+  });
+
   const qty = toDecimal(String(parsed.data.quantity));
   const unit = toDecimalMoney(String(parsed.data.unitPrice));
   const totalN = decimalToNumber(qty) * decimalToNumber(unit);
   const totalPrice = new Prisma.Decimal(totalN.toFixed(2));
+
+  const unitCost = costPerSaleUnit(estimate.total, menuItem.baseRecipeQuantity);
+  const pricingComplete = estimate.missing.length === 0;
+  const lineCostEstimate =
+    unitCost != null && pricingComplete
+      ? new Prisma.Decimal((unitCost * parsed.data.quantity).toFixed(2))
+      : null;
 
   await prisma.quoteItem.create({
     data: {
@@ -200,12 +222,36 @@ export async function addQuoteLine(
       unitPrice: unit,
       totalPrice,
       costSnapshot: {
-        source: "mvp",
+        source: "recipe_supplier_prices",
         menuItemId: menuItem.id,
         menuItemName: menuItem.name,
-        note: "עלות פנימית מעץ מוצר תתווסף בשלב הבא",
+        baseRecipeQuantity: menuItem.baseRecipeQuantity.toString(),
+        saleUnit: menuItem.saleUnit,
+        recipeVersion: recipeMeta?.version ?? null,
+        recipeTotalForBase: estimate.total.toString(),
+        unitCostEstimate: unitCost,
+        lineQuantity: parsed.data.quantity,
+        lineCostEstimate: lineCostEstimate
+          ? lineCostEstimate.toString()
+          : null,
+        missingPrices: estimate.missing,
+        computedAt: new Date().toISOString(),
       },
-      recipeSnapshot: { version: "none" },
+      recipeSnapshot: {
+        version: recipeMeta?.version ?? 0,
+        recipeId: recipeMeta?.id ?? null,
+        lines: estimate.lines.map((ln) => ({
+          ingredientId: ln.ingredientId,
+          ingredientName: ln.ingredientName,
+          qtyWithWaste: ln.qtyWithWaste,
+          unit: ln.unit,
+          unitPrice: ln.unitPrice,
+          lineCost: ln.lineCost,
+          supplierId: ln.supplierId,
+          supplierName: ln.supplierName,
+          source: ln.source,
+        })),
+      },
     },
   });
 

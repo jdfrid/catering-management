@@ -17,7 +17,7 @@ export default function PurchasingHubPage() {
           </p>
         </header>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             href="/purchasing/suppliers"
             className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-slate-200 transition hover:ring-amber-300"
@@ -28,8 +28,17 @@ export default function PurchasingHubPage() {
             </p>
           </Link>
           <Link
-            href="/purchasing/orders"
+            href="/purchasing/prices"
             className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-slate-200 transition hover:ring-amber-300"
+          >
+            <h2 className="text-xl font-bold">מחירון ספקים</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              מחירי רכש לפי חומר גלם, יחידה ותוקף.
+            </p>
+          </Link>
+          <Link
+            href="/purchasing/orders"
+            className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-slate-200 transition hover:ring-amber-300 sm:col-span-2 lg:col-span-1"
           >
             <h2 className="text-xl font-bold">הזמנות רכש</h2>
             <p className="mt-2 text-sm text-slate-600">

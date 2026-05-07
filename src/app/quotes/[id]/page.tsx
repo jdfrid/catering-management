@@ -10,6 +10,16 @@ import { DEFAULT_VAT_RATE } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
+function quoteLineCostEstimate(row: { costSnapshot: unknown }): number | null {
+  const s = row.costSnapshot;
+  if (!s || typeof s !== "object") return null;
+  const o = s as Record<string, unknown>;
+  const raw = o.lineCostEstimate;
+  if (raw == null || raw === "") return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : null;
+}
+
 type Props = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ locked?: string; deleteBlocked?: string }>;
@@ -36,6 +46,14 @@ export default async function QuoteDetailPage({ params, searchParams }: Props) {
   });
 
   const lineReadOnly = quote.status === QuoteStatus.APPROVED;
+
+  const lineCostSum = quote.items.reduce(
+    (acc, row) => acc + (quoteLineCostEstimate(row) ?? 0),
+    0,
+  );
+  const hasLineCostEstimates = quote.items.some(
+    (row) => quoteLineCostEstimate(row) != null,
+  );
 
   return (
     <main className="min-h-[60vh] bg-[#f7f2ea] px-4 py-8 sm:px-6 lg:px-10">
@@ -105,18 +123,21 @@ export default async function QuoteDetailPage({ params, searchParams }: Props) {
                       <th className="p-3 font-semibold">כמות</th>
                       <th className="p-3 font-semibold">מחיר יחידה</th>
                       <th className="p-3 font-semibold">סה״כ שורה</th>
+                      <th className="p-3 font-semibold">הערכת עלות</th>
                       <th className="p-3 font-semibold" />
                     </tr>
                   </thead>
                   <tbody>
                     {quote.items.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="p-6 text-slate-500">
+                        <td colSpan={6} className="p-6 text-slate-500">
                           אין שורות — הוסף מנות מהקטלוג.
                         </td>
                       </tr>
                     ) : (
-                      quote.items.map((row) => (
+                      quote.items.map((row) => {
+                        const lineEst = quoteLineCostEstimate(row);
+                        return (
                         <tr key={row.id} className="border-b border-slate-100">
                           <td className="p-3 font-medium">{row.menuItem.name}</td>
                           <td className="p-3 font-mono" dir="ltr">
@@ -128,6 +149,9 @@ export default async function QuoteDetailPage({ params, searchParams }: Props) {
                           <td className="p-3 font-mono font-semibold" dir="ltr">
                             ₪{Number(row.totalPrice).toFixed(2)}
                           </td>
+                          <td className="p-3 font-mono text-slate-700" dir="ltr">
+                            {lineEst != null ? `₪${lineEst.toFixed(2)}` : "—"}
+                          </td>
                           <td className="p-3">
                             <RemoveQuoteLineButton
                               quoteId={quote.id}
@@ -136,7 +160,8 @@ export default async function QuoteDetailPage({ params, searchParams }: Props) {
                             />
                           </td>
                         </tr>
-                      ))
+                      );
+                      })
                     )}
                   </tbody>
                 </table>
@@ -195,6 +220,20 @@ export default async function QuoteDetailPage({ params, searchParams }: Props) {
                 הסיכומים מתעדכנים אוטומטית בעת שינוי שורות, הנחה או עלות
                 פנימית.
               </p>
+              {hasLineCostEstimates ? (
+                <div className="mt-4 border-t border-white/15 pt-4 text-sm">
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-slate-400">סה״כ הערכת עלות (מחירון)</dt>
+                    <dd className="font-mono" dir="ltr">
+                      ₪{lineCostSum.toFixed(2)}
+                    </dd>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-500">
+                    מחושב בעת הוספת שורה מעץ מוצר ומחירי ספק; השוואה לעלות הפנימית
+                    שהזנת מעלה.
+                  </p>
+                </div>
+              ) : null}
             </div>
 
             <div className="rounded-[2rem] bg-white p-6 ring-1 ring-slate-200">
