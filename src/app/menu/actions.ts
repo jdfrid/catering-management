@@ -77,22 +77,34 @@ export async function createMenuItem(
       ? toDecimalMoney(suggestedRaw)
       : null;
 
-  await prisma.menuItem.create({
-    data: {
-      name: parsed.data.name.trim(),
-      category: parsed.data.category,
-      saleUnit: parsed.data.saleUnit,
-      baseRecipeQuantity: toDecimal(String(parsed.data.baseRecipeQuantity)),
-      suggestedPrice,
-      prepMinutes: optionalInt(parsed.data.prepMinutes),
-      cookMinutes: optionalInt(parsed.data.cookMinutes),
-      complexity: parsed.data.complexity?.trim() || null,
-      instructions: parsed.data.instructions?.trim() || null,
-      active: true,
-    },
+  const item = await prisma.$transaction(async (tx) => {
+    const created = await tx.menuItem.create({
+      data: {
+        name: parsed.data.name.trim(),
+        category: parsed.data.category,
+        saleUnit: parsed.data.saleUnit,
+        baseRecipeQuantity: toDecimal(String(parsed.data.baseRecipeQuantity)),
+        suggestedPrice,
+        prepMinutes: optionalInt(parsed.data.prepMinutes),
+        cookMinutes: optionalInt(parsed.data.cookMinutes),
+        complexity: parsed.data.complexity?.trim() || null,
+        instructions: parsed.data.instructions?.trim() || null,
+        active: true,
+      },
+    });
+    await tx.recipe.create({
+      data: {
+        menuItemId: created.id,
+        version: 1,
+        active: true,
+        baseQuantity: toDecimal(String(parsed.data.baseRecipeQuantity)),
+      },
+    });
+    return created;
   });
+
   revalidatePath("/menu");
-  redirect("/menu");
+  redirect(`/menu/${item.id}`);
 }
 
 export async function updateMenuItem(
@@ -152,6 +164,12 @@ export async function updateMenuItem(
       complexity: parsed.data.complexity?.trim() || null,
       instructions: parsed.data.instructions?.trim() || null,
       active,
+    },
+  });
+  await prisma.recipe.updateMany({
+    where: { menuItemId: id, active: true },
+    data: {
+      baseQuantity: toDecimal(String(parsed.data.baseRecipeQuantity)),
     },
   });
   revalidatePath("/menu");

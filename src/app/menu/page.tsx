@@ -16,12 +16,20 @@ export default async function MenuListPage() {
             <h1 className="text-3xl font-bold">תפריט ומנות</h1>
             <p className="mt-1 text-slate-600">קטלוג מנות לבניית הצעות מחיר.</p>
           </div>
-          <Link
-            href="/menu/new"
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-slate-950 px-6 font-bold text-white hover:bg-slate-800"
-          >
-            + מנה חדשה
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/menu/ingredients"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 font-semibold text-slate-800 hover:bg-slate-50"
+            >
+              חומרי גלם · עץ מוצר
+            </Link>
+            <Link
+              href="/menu/new"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-slate-950 px-6 font-bold text-white hover:bg-slate-800"
+            >
+              + מנה חדשה
+            </Link>
+          </div>
         </div>
 
         <div className="overflow-hidden rounded-[2rem] bg-white shadow-sm ring-1 ring-slate-200">

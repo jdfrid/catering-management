@@ -35,6 +35,19 @@ export const MENU_CATEGORIES = [
 
 export const SALE_UNITS = ["מנה", "מגש", "ק״ג", "ליטר", "יחידה"] as const;
 
+/** סוג חומר גלם בעץ מוצר */
+export const INGREDIENT_TYPES = [
+  "יבש",
+  "קירור",
+  "ירקות ופירות",
+  "בשר ועוף",
+  "דגים",
+  "חלב וביצים",
+  "תבלינים ורטבים",
+  "חד פעמי",
+  "אחר",
+] as const;
+
 export const KITCHEN_DEPARTMENTS = [
   "הכנה מוקדמת",
   "חיתוך",
