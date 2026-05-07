@@ -4,8 +4,9 @@ services:
     runtime: node
     plan: free
     region: frankfurt
-    buildCommand: npm ci && npm run prisma:generate && npm run build
-    preDeployCommand: npx prisma migrate deploy
+    # מיגרציה לפני generate/build — מבטיח ש-Render תמיד תואם לסכמה (גם אם preDeploy לא רץ).
+    buildCommand: npm ci && npm run prisma:deploy && npm run prisma:generate && npm run build
+    preDeployCommand: npm run prisma:deploy
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
