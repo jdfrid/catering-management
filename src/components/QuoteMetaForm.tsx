@@ -61,6 +61,12 @@ export function QuoteMetaForm({ quote }: { quote: Quote }) {
               </option>
             ))}
           </select>
+          {!readOnly ? (
+            <p className="mt-1 text-xs text-slate-500">
+              שמירה עם סטטוס «אושרה» מעדכנת את האירוע למאושר ויוצרת משימות מטבח
+              לפי שורות ההצעה (תאריך עבודה = תאריך האירוע).
+            </p>
+          ) : null}
         </div>
         <div>
           <label className="mb-1 block text-sm font-semibold" htmlFor="validUntil">

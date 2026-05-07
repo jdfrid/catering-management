@@ -13,6 +13,7 @@ import {
   costPerSaleUnit,
   estimateMenuItemRecipeCost,
 } from "@/lib/recipe-cost";
+import { syncKitchenTasksForApprovedQuote } from "@/lib/kitchen-from-order";
 
 function flattenZod(err: z.ZodError): Record<string, string> {
   const out: Record<string, string> = {};
@@ -153,8 +154,12 @@ export async function updateQuoteMeta(
   });
 
   await recalculateQuoteTotals(parsed.data.id);
+  if (parsed.data.status === QuoteStatus.APPROVED) {
+    await syncKitchenTasksForApprovedQuote(parsed.data.id);
+  }
   revalidatePath(`/quotes/${parsed.data.id}`);
   revalidatePath("/quotes");
+  revalidatePath("/kitchen");
   revalidatePath(`/events/${quote.eventId}`);
   return okState("פרטי ההצעה נשמרו");
 }
