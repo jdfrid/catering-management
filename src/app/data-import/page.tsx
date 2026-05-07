@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { moduleMetadata } from "@/components/ModulePlaceholder";
 import { CsvImportForm } from "@/components/CsvImportForm";
-import { IMPORT_ENTITIES } from "@/app/data-import/actions";
+import { IMPORT_ENTITIES } from "@/app/data-import/config";
 
 export const metadata = moduleMetadata(
   "ייבוא CSV",

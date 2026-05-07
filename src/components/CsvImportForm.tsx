@@ -2,11 +2,11 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { importCsvAction } from "@/app/data-import/actions";
 import {
-  importCsvAction,
   IMPORT_ENTITIES,
   type CsvImportActionState,
-} from "@/app/data-import/actions";
+} from "@/app/data-import/config";
 
 function SubmitLabel({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
