@@ -14,6 +14,7 @@ export const mainNav: NavItem[] = [
   { href: "/purchasing", label: "רכש", short: "רכש" },
   { href: "/kitchen", label: "משימות מטבח", short: "מטבח" },
   { href: "/finance", label: "כספים", short: "כספים" },
+  { href: "/data-import", label: "ייבוא CSV", short: "ייבוא" },
 ];
 
 export const moduleLinks: { href: string; title: string }[] = [
@@ -24,4 +25,5 @@ export const moduleLinks: { href: string; title: string }[] = [
   { href: "/purchasing", title: "רכש — ספקים והזמנות" },
   { href: "/kitchen", title: "משימות מטבח לטאבלט" },
   { href: "/finance", title: "כספים — תשלומים" },
+  { href: "/data-import", title: "ייבוא נתונים מ־CSV" },
 ];
