@@ -154,14 +154,21 @@ export async function updateQuoteMeta(
   });
 
   await recalculateQuoteTotals(parsed.data.id);
+
+  let message = "פרטי ההצעה נשמרו";
   if (parsed.data.status === QuoteStatus.APPROVED) {
-    await syncKitchenTasksForApprovedQuote(parsed.data.id);
+    const { created } = await syncKitchenTasksForApprovedQuote(parsed.data.id);
+    message +=
+      created > 0
+        ? ` · נוצרו ${created} משימות מטבח (תאריך עבודה = תאריך האירוע).`
+        : " · לא נוצרו משימות מטבח (אין מנות בשורות ההצעה).";
   }
+
   revalidatePath(`/quotes/${parsed.data.id}`);
   revalidatePath("/quotes");
   revalidatePath("/kitchen");
   revalidatePath(`/events/${quote.eventId}`);
-  return okState("פרטי ההצעה נשמרו");
+  return okState(message);
 }
 
 const lineSchema = z.object({

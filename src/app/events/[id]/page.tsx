@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { EventForm } from "@/components/EventForm";
 import { DeleteEventButton } from "@/components/DeleteEventButton";
-import { QUOTE_STATUS_LABELS } from "@/lib/constants";
+import { QUOTE_STATUS_LABELS, TASK_STATUS_LABELS } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +21,10 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
     include: {
       customer: true,
       quotes: { orderBy: { createdAt: "desc" } },
+      kitchenTasks: {
+        orderBy: [{ workDate: "asc" }, { name: "asc" }],
+        include: { menuItem: { select: { name: true } } },
+      },
     },
   });
 
@@ -104,6 +108,45 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
               >
                 {eventDetail.customer.name}
               </Link>
+            </div>
+
+            <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="font-bold text-slate-800">משימות מטבח</h2>
+                <Link
+                  href="/kitchen"
+                  className="text-sm font-semibold text-amber-900 underline"
+                >
+                  לכל המשימות
+                </Link>
+              </div>
+              <p className="mt-1 text-xs text-slate-500">
+                נוצרות אוטומטית כשהצעה מאושרת ויש בה מנות.
+              </p>
+              <ul className="mt-4 space-y-2 text-sm">
+                {eventDetail.kitchenTasks.length === 0 ? (
+                  <li className="text-slate-500">אין משימות עדיין.</li>
+                ) : (
+                  eventDetail.kitchenTasks.map((t) => (
+                    <li key={t.id}>
+                      <Link
+                        href={`/kitchen/${t.id}`}
+                        className="block rounded-xl border border-slate-200 px-3 py-2 hover:bg-amber-50/50"
+                      >
+                        <span className="font-semibold">{t.name}</span>
+                        <span className="mr-2 text-xs text-slate-500">
+                          {TASK_STATUS_LABELS[t.status] ?? t.status}
+                        </span>
+                        <span className="mt-0.5 block text-xs text-slate-600">
+                          {new Date(t.workDate).toLocaleDateString("he-IL")} ·{" "}
+                          {t.department}
+                          {t.menuItem ? ` · ${t.menuItem.name}` : ""}
+                        </span>
+                      </Link>
+                    </li>
+                  ))
+                )}
+              </ul>
             </div>
 
             <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">

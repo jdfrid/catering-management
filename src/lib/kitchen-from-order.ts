@@ -25,7 +25,7 @@ function workDateAtNoon(eventDate: Date): Date {
  */
 export async function syncKitchenTasksForApprovedQuote(
   quoteId: string,
-): Promise<void> {
+): Promise<{ created: number }> {
   const quote = await prisma.quote.findUnique({
     where: { id: quoteId },
     include: {
@@ -34,7 +34,9 @@ export async function syncKitchenTasksForApprovedQuote(
     },
   });
 
-  if (!quote || quote.status !== QuoteStatus.APPROVED) return;
+  if (!quote || quote.status !== QuoteStatus.APPROVED) {
+    return { created: 0 };
+  }
 
   type Agg = {
     menuItem: (typeof quote.items)[0]["menuItem"];
@@ -54,7 +56,7 @@ export async function syncKitchenTasksForApprovedQuote(
       });
   }
 
-  await prisma.$transaction(async (tx) => {
+  const created = await prisma.$transaction(async (tx) => {
     await tx.kitchenTask.deleteMany({
       where: {
         eventId: quote.eventId,
@@ -63,6 +65,7 @@ export async function syncKitchenTasksForApprovedQuote(
     });
 
     const workDate = workDateAtNoon(quote.event.date);
+    let count = 0;
 
     for (const { menuItem: mi, quantity: qty } of byMenu.values()) {
       if (!mi.active) continue;
@@ -81,6 +84,10 @@ export async function syncKitchenTasksForApprovedQuote(
           notes: `${KITCHEN_AUTO_ORDER_NOTES_PREFIX} הצעה #${quote.quoteNumber} · כמות: ${qty} ${mi.saleUnit}`,
         },
       });
+      count++;
     }
+    return count;
   });
+
+  return { created };
 }

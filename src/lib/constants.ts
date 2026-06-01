@@ -33,7 +33,7 @@ export const MENU_CATEGORIES = [
   "נלווה",
 ] as const;
 
-export const SALE_UNITS = ["מנה", "מגש", "ק״ג", "ליטר", "יחידה"] as const;
+export const SALE_UNITS = ["מנה", "מגש", "ק״ג", "גרם", "ליטר", "יחידה"] as const;
 
 /** סוג חומר גלם בעץ מוצר */
 export const INGREDIENT_TYPES = [
