@@ -71,9 +71,14 @@ npm run prisma:deploy     # ייצור / CI — רק מיגרציות שקיימ
 npm run db:logs
 ```
 
+## מדריך משתמש
+
+**במערכת (עם צילומי מסך):** [`/guide`](http://localhost:3000/guide)  
+**קובץ Markdown:** [docs/MADRICH-MESHUTAF.md](docs/MADRICH-MESHUTAF.md)
+
 ## לא ב-MVP
 
 - אינטגרציה לשירות חשבוניות ישראלי
-- ייבוא Excel
+- ייבוא Excel (יש ייבוא CSV — ראו `/guide`)
 - WhatsApp/SMS
 - מלאי מתקדם לפי אצווה ותפוגה
