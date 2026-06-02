@@ -74,6 +74,7 @@ npm run db:logs
 ## מדריך משתמש
 
 **במערכת (עם צילומי מסך):** [`/guide`](http://localhost:3000/guide)  
+**הורדת PDF:** [`/guide/madrich-meshutaf.pdf`](http://localhost:3000/guide/madrich-meshutaf.pdf)  
 **קובץ Markdown:** [docs/MADRICH-MESHUTAF.md](docs/MADRICH-MESHUTAF.md)
 
 ## לא ב-MVP

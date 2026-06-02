@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>מדריך משתמש — CateringOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Heebo", Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.65;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+    .cover {
+      page-break-after: always;
+      min-height: 240mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24mm 12mm;
+      background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+      color: #fff;
+      border-radius: 8px;
+    }
+    .cover .tag { color: #fcd34d; font-weight: 600; font-size: 12pt; }
+    .cover h1 { font-size: 32pt; margin: 12px 0 8px; font-weight: 700; }
+    .cover p { color: #cbd5e1; font-size: 13pt; max-width: 90%; }
+    .cover .meta { margin-top: 40px; font-size: 10pt; color: #94a3b8; }
+    h2 {
+      font-size: 16pt;
+      color: #0f172a;
+      border-bottom: 2px solid #f59e0b;
+      padding-bottom: 6px;
+      margin: 28px 0 14px;
+      page-break-after: avoid;
+    }
+    h3 { font-size: 12pt; margin: 16px 0 8px; color: #334155; }
+    p { margin: 8px 0; }
+    ul, ol { margin: 8px 0; padding-right: 22px; }
+    li { margin: 4px 0; }
+    code {
+      background: #f1f5f9;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 10pt;
+      direction: ltr;
+      unicode-bidi: embed;
+    }
+    figure {
+      margin: 16px 0;
+      page-break-inside: avoid;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    figure img { width: 100%; height: auto; display: block; }
+    figcaption {
+      font-size: 9pt;
+      color: #64748b;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 10pt;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 8px 10px;
+      text-align: right;
+    }
+    th { background: #f1f5f9; font-weight: 600; }
+    .tip {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 12px 0;
+      font-size: 10pt;
+    }
+    .section { page-break-inside: avoid; }
+    .flow {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 14px;
+      font-family: monospace;
+      font-size: 10pt;
+      direction: ltr;
+      text-align: center;
+      margin: 12px 0;
+    }
+    footer {
+      margin-top: 32px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 9pt;
+      color: #64748b;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cover">
+    <div class="tag">CateringOS</div>
+    <h1>מדריך משתמש</h1>
+    <p>מדריך שלב-אחר-שלב לניהול קייטרינג מקצה לקצה: לקוחות, אירועים, תפריט, הצעות מחיר, רכש, משימות מטבח, כספים וייבוא נתונים.</p>
+    <div class="meta">גרסת MVP · עברית (RTL) · catering-management</div>
+  </div>
+
+  <h2>1. התחלה — כניסה למערכת</h2>
+  <ol>
+    <li>פתחו את כתובת המערכת בדפדפן (מקומית: <code>http://localhost:3000</code>, בפרודקשן: כתובת Render).</li>
+    <li>אין עדיין מסך התחברות — כל המשתמשים רואים את אותם מסכים.</li>
+    <li>אם מופיעה שגיאת «לא ניתן לטעון את העמוד»: ודאו ש־PostgreSQL פועל (<code>npm run db:up</code>), הריצו <code>npx prisma migrate deploy</code>, ובדקו ש־<code>DATABASE_URL</code> מוגדר בקובץ <code>.env</code>.</li>
+  </ol>
+  <figure>
+    <img src="01-dashboard.png" alt="דשבורד" />
+    <figcaption>איור 1 — דשבורד: נקודת כניסה עם קיצורי דרך לכל המודולים.</figcaption>
+  </figure>
+
+  <h2>2. סרגל ניווט עליון</h2>
+  <table>
+    <thead><tr><th>כפתור</th><th>תפקיד</th></tr></thead>
+    <tbody>
+      <tr><td>דשבורד</td><td>מסך הבית</td></tr>
+      <tr><td>לקוחות</td><td>רשימת לקוחות ויצירה</td></tr>
+      <tr><td>אירועים</td><td>אירועים לפי תאריך וסטטוס</td></tr>
+      <tr><td>תפריט</td><td>מנות, חומרי גלם, עץ מוצר (מתכון)</td></tr>
+      <tr><td>הצעות</td><td>הצעות מחיר ורווחיות</td></tr>
+      <tr><td>רכש</td><td>ספקים, מחירון, הזמנות רכש</td></tr>
+      <tr><td>מטבח</td><td>משימות הכנה (מותאם לטאבלט)</td></tr>
+      <tr><td>כספים</td><td>רישום תשלומים</td></tr>
+      <tr><td>ייבוא</td><td>טעינת CSV מאקסל</td></tr>
+      <tr><td>מדריך</td><td>מדריך משתמש (/guide)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. זרימת עבודה מומלצת</h2>
+  <div class="flow">לקוח → אירוע → תפריט + מחירון → הצעת מחיר → אישור → מטבח → רכש → תשלום</div>
+  <ol>
+    <li>יצירת לקוח (שם + טלפון חובה).</li>
+    <li>פתיחת אירוע — תאריך, מספר מוזמנים, רמת שירות, כתובת.</li>
+    <li>הגדרת תפריט: מנות, חומרי גלם, שורות מתכון, מחירון ספקים.</li>
+    <li>יצירת הצעת מחיר לאירוע + הוספת שורות (מנות וכמויות).</li>
+    <li>שמירה עם סטטוס «אושרה» — מעדכן את האירוע ויוצר משימות מטבח אוטומטית.</li>
+    <li>רכש: הזמנות לספקים (קישור לאירוע אופציונלי).</li>
+    <li>מטבח: ביצוע משימות ועדכון סטטוס.</li>
+    <li>כספים: רישום תשלום מהלקוח.</li>
+  </ol>
+  <div class="tip"><strong>טיפ:</strong> ניתן לייבא נתונים מראש מ־CSV (סעיף 12) במקום הזנה ידנית.</div>
+
+  <h2>4. לקוחות</h2>
+  <ol>
+    <li>לחצו «לקוחות» בסרגל → «לקוח חדש».</li>
+    <li>מלאו שם, טלפון (חובה), סוג לקוח (פרטי / עסקי / מוסדי), אימייל, כתובת, ח.פ, הערות.</li>
+    <li>שמרו — תועברו לכרטיס הלקוח לעריכה, צפייה באירועים והצעות.</li>
+  </ol>
+
+  <h2>5. אירועים</h2>
+  <ol>
+    <li>«אירועים» → «אירוע חדש» → בחרו לקוח.</li>
+    <li>מלאו סוג אירוע, תאריך ושעה, מספר מוזמנים, רמת שירות (שירות מלא / הגשה / משלוח / איסוף עצמי).</li>
+    <li>הוסיפו שם אירוע, כתובת, שעת אספקה, סוג תפריט והערות תפעול.</li>
+    <li>בעמוד האירוע: הצעות מחיר, משימות מטבח (לאחר אישור הצעה), קישורים לרכש וכספים.</li>
+  </ol>
+
+  <h2>6. תפריט ועץ מוצר</h2>
+  <h3>6.1 חומרי גלם</h3>
+  <ol>
+    <li>«תפריט» → «חומרי גלם» → «חומר חדש».</li>
+    <li>שם, סוג (יבש / קירור / בשר…), יחידה: מנה, מגש, ק״ג, <strong>גרם</strong>, ליטר, יחידה.</li>
+    <li>ספק מועדף (אופציונלי) — משמש בחישוב עלות.</li>
+  </ol>
+  <h3>6.2 מנות ומתכון</h3>
+  <ol>
+    <li>«תפריט» → «מנה חדשה» — שם, קטגוריה, יחידת מכירה, כמות בסיס למתכון.</li>
+    <li>בעריכת מנה: «עץ מוצר — פירוק למתכון» — הוסיפו חומרי גלם, כמות, יחידה (למשל גרם), אחוז פחת.</li>
+    <li>קטע «עלות משוערת לפי מחירון ספקים» — חישוב אוטומטי (סעיף 8).</li>
+  </ol>
+
+  <h2>7. הצעות מחיר</h2>
+  <ol>
+    <li>«הצעות» → «הצעה חדשה» — בחרו אירוע (או מעמוד האירוע: «הצעה חדשה לאירוע»).</li>
+    <li>הוסיפו שורות: מנה, כמות, מחיר ליחידה — הסיכום (לפני מע״מ, מע״מ, סה״כ) מתעדכן אוטומטically.</li>
+    <li>«פרטי הצעה»: הנחה, עלות פנימית, תנאי תשלום, הערות, תוקף.</li>
+    <li>לאישור: שנה סטטוס ל«אושרה» ושמרו — האירוע יסומן מאושר, וייווצרו משימות מטבח (סעיף 10).</li>
+    <li>הצעה מאושרת ננעלת לעריכה (MVP).</li>
+  </ol>
+  <p>בעמוד ההצעה: עמודת «הערכת עלות» לכל שורה + סיכום «סה״כ הערכת עלות (מחירון)» בסרגל.</p>
+
+  <h2>8. חישוב עלות אוטומטי</h2>
+  <p>המערכת מחשבת עלות מתכון לפי:</p>
+  <ul>
+    <li>מתכון פעיל של המנה (כמויות + פחת).</li>
+    <li>מחירון ספקים — <strong>יחידת המחיר חייבת להתאים</strong> ליחידה בשורת המתכון.</li>
+    <li>ספק מועדף לחומר (אם קיים מחיר תקף), אחרת המחיר הזול ביותר.</li>
+    <li>טווח תאריכי תוקף במחירון (אם הוגדר).</li>
+  </ul>
+  <p><strong>איפה רואים:</strong> בעמוד עריכת מנה; בהצעת מחיר (עמודת הערכת עלות).</p>
+  <p><strong>מחירון:</strong> רכש → מחירון ספקים.</p>
+
+  <h2>9. רכש</h2>
+  <figure>
+    <img src="02-purchasing.png" alt="מרכז רכש" />
+    <figcaption>איור 2 — מרכז רכש: ספקים, מחירון והזמנות.</figcaption>
+  </figure>
+  <ol>
+    <li><strong>ספקים</strong> — רשימה, יצירה, עריכה; בכרטיס ספק גם טבלת מחירון.</li>
+    <li><strong>מחירון ספקים</strong> — מחיר לפי ספק + חומר גלם + יחידת מחיר (עדכון = upsert).</li>
+    <li><strong>הזמנות רכש</strong> — טיוטה, שורות (שם חומר, כמות, יחידה, מחיר משוער), סטטוס; קישור לאירוע אופציונלי.</li>
+  </ol>
+
+  <h2>10. משימות מטבח</h2>
+  <p><strong>יצירה אוטומטית:</strong> כשהצעת מחיר נשמרת כ«אושרה» ויש בה שורות מנות — נוצרת משימה לכל מנה (כמות מסוכמת), תאריך עבודה = תאריך האירוע, מחלקה «הכנה מוקדמת». ההערה מתחילה ב־<code>[אוטו-הזמנה]</code>.</p>
+  <ol>
+    <li>«מטבח» — כרטיסי משימות מהיום ואילך; עדכון סטטוס מהיר.</li>
+    <li>«משימה חדשה» — יצירה ידנית (אירוע, מנה, מחלקה, תאריך).</li>
+    <li>בעמוד האירוע — רשימת משימות מקושרות.</li>
+  </ol>
+
+  <h2>11. כספים</h2>
+  <ol>
+    <li>«כספים» → רישום תשלום: לקוח, סכום, תאריך, אמצעי תשלום.</li>
+    <li>קישור לאירוע — מעמוד האירוע («פעולות מהירות») ממלא מראש.</li>
+  </ol>
+
+  <h2>12. ייבוא נתונים מ־CSV (אקסל)</h2>
+  <figure>
+    <img src="03-data-import.png" alt="ייבוא CSV" />
+    <figcaption>איור 3 — מסך ייבוא: בחירת סוג רשימה והעלאת קובץ.</figcaption>
+  </figure>
+  <ol>
+    <li>«ייבוא» בסרגל העליון.</li>
+    <li>באקסל: קובץ → שמירה בשם → <strong>CSV UTF-8</strong> (מומלץ).</li>
+    <li>בחרו סוג רשימה (לקוחות, ספקים, מנות, מחירון, שורות מתכון, אירועים…).</li>
+    <li>העלו קובץ — שורה ראשונה = כותרות (עברית או אנגלית).</li>
+  </ol>
+  <p><strong>סדר מומלץ:</strong></p>
+  <ul>
+    <li>לקוחות → אנשי קשר (אופציונלי) → אירועים</li>
+    <li>ספקים → חומרי גלם → מנות → מחירון → שורות מתכון</li>
+  </ul>
+  <p>שמות (ספק, חומר, מנה) חייבים להתאים <strong>בדיוק</strong> לשם במערכת.</p>
+
+  <footer>CateringOS · מדריך משתמש · נוצר אוטומטית מהמערכת</footer>
+</body>
+</html>

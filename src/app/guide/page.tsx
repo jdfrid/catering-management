@@ -74,12 +74,21 @@ export default function UserGuidePage() {
           <p className="mt-4 max-w-2xl text-slate-300">
             הוראות ברורות לניהול קייטרинг מקצה לקצה — בעברית, מימין לשמאל.
           </p>
-          <Link
-            href="/"
-            className="mt-6 inline-flex rounded-2xl bg-amber-400 px-5 py-2.5 text-sm font-bold text-slate-950 hover:bg-amber-300"
-          >
-            חזרה לדשבורד
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href="/guide/madrich-meshutaf.pdf"
+              download="CateringOS-מדריך-משתמש.pdf"
+              className="inline-flex rounded-2xl bg-amber-400 px-5 py-2.5 text-sm font-bold text-slate-950 hover:bg-amber-300"
+            >
+              הורדת PDF
+            </a>
+            <Link
+              href="/"
+              className="inline-flex rounded-2xl border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-bold text-white hover:bg-white/20"
+            >
+              חזרה לדשבורד
+            </Link>
+          </div>
         </header>
 
         <nav className="sticky top-20 z-40 rounded-2xl bg-white/95 p-4 shadow-sm ring-1 ring-slate-200 backdrop-blur">
